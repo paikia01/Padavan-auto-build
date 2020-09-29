@@ -98,9 +98,15 @@ jobs:
         sudo ./clear_tree
         sudo ./build_firmware_modify $TNAME 0
         sudo mv -f images/*.trx /opt/images/
+        echo "::set-env name=FILE_NAME::$T_NAMES-$(date "+%Y%m%d")"
     - name : Upload packages
       uses: actions/upload-artifact@master
       if: always()
       with:
-        name: Padavan-packages"$(date "+%Y%m%d")"
+        name: Padavan-${{env.FILE_NAME}}
         path: /opt/images
+    - name: Upload firmware to cowtransfer
+      run: |
+        curl -fsSL git.io/file-transfer | sh
+        ./transfer cow --block 2621440 -s -p 64 --no-progress ${IMAGES_PATH} 2>&1 | tee cowtransfer.log
+        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
