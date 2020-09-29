@@ -98,6 +98,8 @@ jobs:
         sudo ./clear_tree
         sudo ./build_firmware_modify $TNAME 0
         sudo mv -f images/*.trx /opt/images/
+        cd /opt/images/
+        for i in `ls`; do mv -f $i `echo "$(date +"%Y%m%d")-"$i`; done
         echo "::set-env name=FILE_NAME::$TNAME-$(date "+%Y%m%d")"
     - name : Upload packages
       uses: actions/upload-artifact@master
